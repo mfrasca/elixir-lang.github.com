@@ -159,7 +159,7 @@ iex> fun.(0)
 true
 ```
 
-We mentioned in [Anonymous functions](/getting-started/basic-types.html#anonymous-functions), that Elixir makes a distinction between (anonymous) function values and (named) functions. Apart from deeper details, one difference is that when we use a named function, we are reaching its definition through a table — a "namespace" — which contains guaranteed only function definitions. The obvious thing to do with such an object is to evaluate it. Please consider that automatic evaluation is now deprecated in Elixir and that the operator to explicitly evaluate a function is `()`.
+We mentioned in [Anonymous functions](/getting-started/basic-types.html#anonymous-functions), that Elixir makes a distinction between (anonymous) function values and (named) functions. Apart from deeper details, one difference is that when we use a named function, we are reaching its definition through a table — a "namespace" — which contains guaranteed only function definitions. The obvious thing to do with such an object is to evaluate it. Please consider that automatic evaluation is soon to be deprecated in Elixir and that the operator to explicitly evaluate a function is `()`.
 
 When we reach a function definition through a value, the operator to evaluate it is `.()`, that is: including the leading `.`.
 
@@ -177,6 +177,8 @@ iex> defmodule TemporaryContainer do
    97, 105, ...>>, {:bar, 0}}
 iex> import TemporaryContainer
 TemporaryContainer
+
+# extract the function value from a named function
 iex> bar = &foo/0
 &TemporaryContainer.foo/0
 
@@ -193,18 +195,9 @@ iex> bar.()
 # this evaluates the function defined as bar
 iex> bar()
 "TC.bar"
-# returning the value takes precedence above evaluating the function
+# returning the value takes precedence above (deprecated) implicit evaluation
 iex> bar
 &TemporaryContainer.foo/0
-```
-
-Local or imported functions, like `is_function/1`, can be captured without the module:
-
-```iex
-iex> &is_function/1
-&:erlang.is_function/1
-iex> (&is_function/1).(fun)
-true
 ```
 
 Note the capture syntax can also be used as a shortcut for creating functions:
