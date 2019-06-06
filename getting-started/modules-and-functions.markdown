@@ -159,7 +159,44 @@ iex> fun.(0)
 true
 ```
 
-Remember Elixir makes a distinction between anonymous functions and named functions, where the former must be invoked with a dot (`.`) between the variable name and parentheses. The capture operator bridges this gap by allowing named functions to be assigned to variables and passed as arguments in the same way we assign, invoke and pass anonymous functions.
+We mentioned in [Anonymous functions](/getting-started/basic-types.html#anonymous-functions), that Elixir makes a distinction between (anonymous) function values and (named) functions. Apart from deeper details, one difference is that when we use a named function, we are reaching its definition through a table — a "namespace" — which contains guaranteed only function definitions. The obvious thing to do with such an object is to evaluate it. Please consider that automatic evaluation is now deprecated in Elixir and that the operator to explicitly evaluate a function is `()`.
+
+When we reach a function definition through a value, the operator to evaluate it is `.()`, that is: including the leading `.`.
+
+The capture operator bridges this gap by extracting the function value from a (named) function, allowing it to be matched to a variable. When we use the matched variable, we are accessing a function value, so we must handle it in the same way we assign, invoke and pass anonymous functions.
+
+```iex
+iex> defmodule TemporaryContainer do
+...>   def foo, do: "TC.foo"
+...>   def bar, do: "TC.bar"
+...> end
+{:module, TemporaryContainer,
+ <<70, 79, 82, 49, 0, 0, 4, 76, 66, 69, 65, 77, 65, 116, 85, 56,
+   0, 0, 0, 140, 0, 0, 0, 14, 25, 69, 108, 105, 120, 105, 114, 46,
+   84, 101, 109, 112, 111, 114, 97, 114, 121, 67, 111, 110, 116,
+   97, 105, ...>>, {:bar, 0}}
+iex> import TemporaryContainer
+TemporaryContainer
+iex> bar = &foo/0
+&TemporaryContainer.foo/0
+
+# this is deprecated syntax, evaluating foo
+iex> foo
+"TC.foo"
+# this is the proper way to evaluate foo
+iex> foo()
+"TC.foo"
+
+# this evaluates the function value associated to bar
+iex> bar.()
+"TC.foo"
+# this evaluates the function defined as bar
+iex> bar()
+"TC.bar"
+# returning the value takes precedence above evaluating the function
+iex> bar
+&TemporaryContainer.foo/0
+```
 
 Local or imported functions, like `is_function/1`, can be captured without the module:
 
